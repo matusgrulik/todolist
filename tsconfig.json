@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ES2016",
+    "declaration": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "allowJs": false,
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "strictNullChecks": true,
+    "keyofStringsOnly": true,
+    "lib": [
+      "es2015",
+      "es2017",
+      "dom"
+    ],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": [
+    "src"
+  ]
+}
