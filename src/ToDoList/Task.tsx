@@ -16,7 +16,12 @@ const DivTask = styled.div<{ completed: boolean }>`
   border-radius: 10px;
   opacity: ${(props) => (props.completed ? 0.5 : 1)};
 `;
-
+const DivPart = styled.div`
+  margin-left: 10px;
+  text-align: center;
+  overflow: auto;
+  max-width: 20%;
+`;
 const Button = styled.button`
   border: none;
   background: transparent;
@@ -28,7 +33,10 @@ const Button = styled.button`
 
 export type TaskType = {
   id: string;
+  title: string;
   text: string;
+  deadlineDate: string;
+  deadlineTime: string;
   completed: boolean;
   createdAt: number;
   completedAt: number | null;
@@ -43,7 +51,30 @@ type TaskProps = {
 export const Task = (props: TaskProps) => {
   return (
     <DivTask completed={props.task.completed}>
-      <h2>{props.task.text}</h2>
+      <DivPart>
+        <h1>
+          Title <br />
+        </h1>
+        <h2>{props.task.title}</h2>
+      </DivPart>
+      <DivPart>
+        <h1>
+          Text <br />
+        </h1>
+        <h4>{props.task.text}</h4>
+      </DivPart>
+      <DivPart>
+        <h1>
+          Deadline Date <br />
+        </h1>
+        <h4>{props.task.deadlineDate}</h4>
+      </DivPart>
+      <DivPart>
+        <h1>
+          Deadline Time <br />{" "}
+        </h1>
+        <h4>{props.task.deadlineTime}</h4>
+      </DivPart>
       <div>
         <Button onClick={() => props.toggleTask(props.task.id)}>
           <TickIcon />

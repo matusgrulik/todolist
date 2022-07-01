@@ -1,13 +1,17 @@
+import * as yup from "yup";
 import { Helmet } from "react-helmet";
 import { LinkActive, LinkAll, LinkCompleted } from "./UrlBasement";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { STORAGE_NAME } from "./utils";
 import { TaskType } from "./Task";
 import { Tasks } from "./Tasks";
+import { formatWithOptions } from "util";
 import { getId } from "./utils";
 import { themes } from "./Theme";
+import { useForm } from "react-hook-form";
 import { useLocalStorage } from "./utils";
 import { useRef, useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
 import styled from "styled-components";
 
 const H1 = styled.h1`
@@ -37,7 +41,9 @@ const DivWrapper = styled.div`
 `;
 
 const Button = styled.button`
-  margin-left: 1rem;
+  margin-top: 1em;
+  margin-bottom: 2em;
+  margin-left: -1em;
   border: 2px solid ${themes.secondaryColor};
   border-radius: 10px;
   text-transform: uppercase;
@@ -45,46 +51,75 @@ const Button = styled.button`
   cursor: pointer;
   font-weight: bold;
   color: ${themes.secondaryColor};
-  font-size: 1rem;
+  font-size: 1.8em;
 `;
 
-const InputAddTask = styled.input`
-  height: 2em;
-  margin: 0;
-  width: 100%;
-  font-size: 150%;
+const Input = styled.input`
+  font-size: 0.9em;
+  text-align: center;
+  padding: 0.3em 1em;
+`;
+const Label = styled.label`
+  font-size: 0.8em;
+  text-transform: ${themes.textTransform};
+  font-weight: bold;
+  margin: 0.5em;
   color: ${themes.primaryColor};
-  background: transparent;
-  border-radius: 10px;
-  border: 2px solid ${themes.primaryColor};
-  padding: 0 15px;
 `;
-
-const DivAddTaskBox = styled.div`
+const Form = styled.form`
+  text-align: center;
+  max-width: 100%;
+  margin: auto;
   display: flex;
-  margin-bottom: 2em;
-  color: ${themes.primaryColor};
+  align-items: center;
+  flex-direction: column;
 `;
+const InputDiv = styled.div`
+  font-size: 1.8em;
+  text-align: center;
+  margin: 0 1em 0 0;
+  width: 80%;
+`;
+const ErrorDiv = styled.div`
+  text-align: center;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 0;
+  margin: 0.5em;
+`;
+const inputsSchema = yup.object().shape({
+  taskTitle: yup.string().required("Title is required"),
+  taskText: yup.string().required("Text is required"),
+  taskDeadlineDate: yup.string().required("Deadline Date is required"),
+  taskDeadlineTime: yup.string().required("Deadline Time is required"),
+});
 
 export const TodoApp = () => {
   const [tasks, setTasks] = useLocalStorage<TaskType[]>(STORAGE_NAME, []);
-  const [taskInput, setTaskInput] = useState("");
+  const [taskTitle, setTaskTitle] = useState("");
+  const [taskText, setTaskText] = useState("");
+  const [taskDeadlineDate, setTaskDeadlineDate] = useState("");
+  const [taskDeadlineTime, setTaskDeadlineTime] = useState("");
   const focusMe = useRef<HTMLInputElement>(null);
+
+  const form = useForm({ resolver: yupResolver(inputsSchema) });
   const addTask = () => {
-    if (taskInput === "") {
-      focusMe.current?.focus();
-      return;
-    }
     const d = new Date();
     const newTask = {
       id: getId(),
-      text: taskInput,
+      title: taskTitle,
+      text: taskText,
+      deadlineDate: taskDeadlineDate,
+      deadlineTime: taskDeadlineTime,
       completed: false,
       createdAt: d.getTime(),
       completedAt: null,
     };
     setTasks((p) => [...p, newTask]);
-    setTaskInput("");
+    setTaskTitle("");
+    setTaskText("");
+    setTaskDeadlineDate("");
+    setTaskDeadlineTime("");
   };
 
   const toggleTask = (id: string) => {
@@ -120,18 +155,72 @@ export const TodoApp = () => {
       </Helmet>
       <DivWrapper>
         <H1>To do list application</H1>
-        <DivAddTaskBox>
-          <InputAddTask
-            autoFocus
-            ref={focusMe}
-            type="text"
-            placeholder="What needs to be done?"
-            onChange={(e) => setTaskInput(e.target.value)}
-            value={taskInput}
-            onKeyPress={handleAddKey}
-          />
-          <Button onClick={addTask}>Add task</Button>
-        </DivAddTaskBox>
+
+        <Form>
+          <InputDiv>
+            <Label>Task Title</Label>
+            <ErrorDiv>{form.formState.errors.taskTitle?.message}</ErrorDiv>
+            <Input
+              {...form.register("taskTitle")}
+              type="text"
+              name="taskTitle"
+              placeholder="Task Title"
+              value={taskTitle}
+              onChange={(e) => {
+                setTaskTitle(e.target.value);
+              }}
+            />
+          </InputDiv>
+          <InputDiv>
+            <Label>Task Text</Label>
+            <ErrorDiv>{form.formState.errors.taskText?.message}</ErrorDiv>
+            <Input
+              {...form.register("taskText")}
+              required
+              type="text"
+              name="taskText"
+              placeholder="Task Text"
+              value={taskText}
+              onChange={(e) => {
+                setTaskText(e.target.value);
+              }}
+            />
+          </InputDiv>
+          <InputDiv>
+            <Label>Deadline Date</Label>
+            <ErrorDiv>
+              {form.formState.errors.taskDeadlineDate?.message}
+            </ErrorDiv>
+            <Input
+              {...form.register("taskDeadlineDate")}
+              required
+              type="date"
+              name="taskDeadlineDate"
+              value={taskDeadlineDate}
+              onChange={(e) => {
+                setTaskDeadlineDate(e.target.value);
+              }}
+            />
+          </InputDiv>
+          <InputDiv>
+            <Label>Deadline time</Label>
+            <ErrorDiv>
+              {form.formState.errors.taskDeadlineTime?.message}
+            </ErrorDiv>
+            <Input
+              {...form.register("taskDeadlineTime")}
+              type="time"
+              name="taskDeadlineTime"
+              value={taskDeadlineTime}
+              onChange={(e) => {
+                setTaskDeadlineTime(e.target.value);
+              }}
+              onKeyPress={handleAddKey}
+            />
+          </InputDiv>
+          <Button onClick={form.handleSubmit(addTask)}>Submit</Button>
+        </Form>
+
         <DivTaskFilters>
           <LinkAll />
           <LinkActive />

@@ -1,10 +1,5 @@
-
-
+import { FaClipboardList } from "react-icons/fa";
 import { Link, Route, BrowserRouter as Router, Switch } from "react-router-dom";
-
-
-
-
 import { TodoApp } from "./ToDoList/TodoApp";
 import { appUrls } from "./config";
 import styled from "styled-components";
@@ -46,26 +41,5 @@ const TextDiv = styled.div`
   max-width: 100%;
 `;
 export default function App() {
-  return (
-    <Router>
-      <div>
-        <nav>
-         
-            <LinkNav to={appUrls.TO_DO_LIST}>
-              <FaClipboardList /> <TextDiv>To Do List</TextDiv>
-            </LinkNav>
-            
-        </nav>
-
-        <Switch>
-         
-          <Route path={appUrls.TO_DO_LIST}>
-            <TodoApp />
-          </Route>
-
-          
-        </Switch>
-      </div>
-    </Router>
-  );
+  return <TodoApp />;
 }
